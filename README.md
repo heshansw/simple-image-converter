@@ -1,4 +1,4 @@
-Note: Currently this is vibecoded and i am planning to change this to agentic coding approach as a more proper structured project 
+**Note:** Currently this is vibecoded and i am planning to change this to agentic coding approach as a more proper structured project 
 
 # Image Converter
 
@@ -11,7 +11,7 @@ A professional Python-based CLI tool for converting brand assets into platform-s
 * **macOS Icon (`.icns`)**: Creates native Apple Icon Image files containing the full standard iconset (16px to 1024px).
 * **Vector Tracing (`.svg`)**: Converts raster pixels into mathematical paths using the Rust-powered `vtracer` engine, preventing pixelation at any scale.
 * **Smart Format Detection**: Automatically handles misnamed files (e.g., ICO files with .png extension) by converting to proper PNG before processing.
-* **Brand-First Naming**: Optional brand name parameter to automatically format and name your output files (e.g., `tech-tell_mac_512.png`).
+* **Brand-First Naming**: Optional brand name parameter to automatically format and name your output files (e.g., `test_mac_512.png`).
 
 ## 🛠️ Installation
 
@@ -78,9 +78,9 @@ Output: `logo.icns` (contains all macOS icon sizes from 16×16 up to 1024×1024)
 
 #### Create macOS App PNG with Brand Name
 ```bash
-python image-converter.py ./originalimages/logo.png -mac-png 512 "Tech Tell"
+python image-converter.py ./originalimages/logo.png -mac-png 512 "Test"
 ```
-Output: `tech-tell_mac_512.png` (512×512 with logo centered at 82% size)
+Output: `test_mac_512.png` (512×512 with logo centered at 82% size)
 
 ### Parameters
 
@@ -191,6 +191,10 @@ This tool uses the following open-source libraries:
 - **vtracer** - Rust-powered vector tracing engine
 
 Please refer to their respective licenses for usage terms.
+
+## Vibe Coding Resources
+- Google Gemini 3
+- Github Copilot (Claude Sonnet 4.5)
 
 ## 🤝 Contributing
 
