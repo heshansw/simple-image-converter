@@ -1,4 +1,4 @@
-Note: Currently this is vibecoded and i am planning to change this to agentic coding approach as a more proper structured project 
+**Note:** Currently this is vibecoded and i am planning to change this to agentic coding approach as a more proper structured project 
 
 # Image Converter
 
@@ -191,6 +191,10 @@ This tool uses the following open-source libraries:
 - **vtracer** - Rust-powered vector tracing engine
 
 Please refer to their respective licenses for usage terms.
+
+## Vibe Coding Resources
+- Google Gemini 3
+- Github Copilot (Claude Sonnet 4.5)
 
 ## 🤝 Contributing
 
