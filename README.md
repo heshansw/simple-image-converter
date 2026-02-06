@@ -56,7 +56,7 @@ python image-converter.py <image> <mode> [size] [brand_name]
 ```bash
 python image-converter.py ./originalimages/logo.png -svg
 ```
-Output: `logo.svg` (vector traced version)
+Output: `logo.svg` (vector traced version). This conversion will happen without any pixelations
 
 #### Convert to SVG with Brand Name
 ```bash
