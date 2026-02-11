@@ -4,6 +4,7 @@ import tempfile
 import shutil
 import numpy as np
 import icnsutil
+import vtracer
 from PIL import Image, ImageChops, ImageFilter, ImageOps
 
 def create_squircle_mask(size, power=4.5):
@@ -22,6 +23,40 @@ def create_squircle_mask(size, power=4.5):
     
     mask = Image.fromarray((mask_array * 255).astype(np.uint8), mode='L')
     return mask.resize((size, size), Image.Resampling.LANCZOS)
+
+def apply_windows_rounded_corners(logo_img, canvas_size):
+    """
+    Applies Windows 11 style rounded corners.
+    Uses 100% coverage with subtle rounded corners (8% radius).
+    """
+    from PIL import ImageDraw
+    
+    # 1. Resize logo to fill the canvas (100% coverage)
+    logo_resized = logo_img.resize((canvas_size, canvas_size), Image.Resampling.LANCZOS)
+    
+    # 2. Create rounded rectangle mask with 8% corner radius
+    mask = Image.new('L', (canvas_size, canvas_size), 0)
+    draw = ImageDraw.Draw(mask)
+    corner_radius = max(1, int(canvas_size * 0.08))
+    draw.rounded_rectangle(
+        [(0, 0), (canvas_size, canvas_size)],
+        radius=corner_radius,
+        fill=255
+    )
+    
+    # 3. Apply mask to logo alpha channel
+    if 'A' in logo_resized.getbands():
+        orig_alpha = logo_resized.getchannel('A')
+        combined_alpha = ImageChops.darker(orig_alpha, mask)
+        logo_resized.putalpha(combined_alpha)
+    else:
+        logo_resized.putalpha(mask)
+    
+    # 4. Create final canvas
+    final_canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
+    final_canvas.paste(logo_resized, (0, 0), mask=logo_resized)
+    
+    return final_canvas
 
 def apply_mac_rounded_corners(logo_img, canvas_size):
     """
@@ -99,9 +134,15 @@ def convert_image(input_path, mode, size_val, brand_name=None):
             output_file = os.path.join(output_dir, f"{filename_base}.svg")
             temp_png = os.path.join(output_dir, f"{filename_base}_temp.png")
             try:
+                # Use size parameter or default to 64px for favicon-like size
+                svg_size = int(size_val) if size_val else 64
+                
                 img = Image.open(abs_input_path)
+                # Resize to target size before tracing for smaller SVG output
+                img = img.resize((svg_size, svg_size), Image.Resampling.LANCZOS)
                 img.convert('RGBA').save(temp_png, 'PNG')
-                print(f"Tracing {brand_name or 'image'} to SVG...")
+                
+                print(f"Tracing {brand_name or 'image'} to SVG ({svg_size}x{svg_size})...")
                 vtracer.convert_image_to_svg_py(
                     str(temp_png), 
                     str(output_file),
@@ -118,7 +159,7 @@ def convert_image(input_path, mode, size_val, brand_name=None):
                     os.remove(temp_png)
         elif mode == '-mac-png':
             try:
-                size = int(size_or_output) if size_or_output else 512
+                size = int(size_val) if size_val else 512
             except:
                 size = 512
                 
@@ -149,15 +190,17 @@ def convert_image(input_path, mode, size_val, brand_name=None):
                 img = img.convert('RGBA')
             
             try:
-                size = int(size_or_output) if size_or_output else 256
+                size = int(size_val) if size_val else 256
             except:
                 size = 256
 
             if mode == '-win':
                 output_file = os.path.join(output_dir, f"{filename_base}.ico")
-                sizes = [(16, 16), (32, 32), (48, 48), (size, size)]
-                img.save(output_file, format='ICO', sizes=sizes)
-                print(f"Successfully created {brand_name or 'Windows'} icon: {output_file}")
+                
+                # Apply Windows rounded corners at the specified size
+                rounded = apply_windows_rounded_corners(square_logo, size)
+                rounded.save(output_file, format='ICO')
+                print(f"✓ Created rounded Windows ICO ({size}x{size}px): {output_file}")
 
             elif mode == '-mac':
                 output_file = os.path.join(output_dir, f"{filename_base}.icns")
